@@ -5,18 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Defeating the Olympus</title>
     <link rel="stylesheet" href="style.css">
-    <script>
-        function login(){
-            var us=document.getElementById('username').value;
-            var pass=document.getElementById('password').value;
+    <?php
+        $conn=new mysqli('localhost','root','','vulnerable-db')
 
-            if(us=='dionysus'  && pass=='whiskey'){
-                window.location.href='page1.html';
+        if($conn->connect_error){
+            die("Connection failed: ". $conn->connect_error);
+        }
+
+        if(isset($POST['username']) && isset($_POST['password'])){
+            $username=$_POST['username'];
+            $password=$_POST['password'];
+
+            $query="SELECT * FROM users WHERE username='$username' AND password='$password'";
+            $result=$conn->query($query);
+
+            if($result->num_rows >0){
+                header("Location: flag1.html");  // Or use "page1.php" if dynamic
+                exit();
             }else{
-                alert("Incorrect  credentials , Maybe you'll never find using brute force. Try another way");
+                echo "<script>
+        alert('Invalid username or password. Please try again.');
+        window.location.href = 'index.html'; // Redirect back to the login page
+        </script>";
             }
         }
-    </script>
+    ?>
 </head>
 <body>
     <div class="container">
@@ -27,7 +40,7 @@
 
         <section class="login-section">
             <h2>Get past the main gate first</h2>
-            <form onsubmit="event.preventDefault(); login();">
+            <form method="POST">
                 <label for="username">Username:</label>
                 <input type="text" id="username" name="username" placeholder="Your username"><br>
 
